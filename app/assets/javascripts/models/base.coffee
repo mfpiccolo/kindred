@@ -30,12 +30,13 @@ class App.Base
     else
       url = "/" + @route + ".js"
 
+    params = {}
+    params[@model.replace("-", "_")] = @attributes
+
     $.ajax
       url: url
       type: "PATCH"
-      data: {
-        @model.replace("-", "_"): @attributes,
-      }
+      data: params
 
   set_attributes: (attrs) ->
     $.each attrs, (attr, val) =>
