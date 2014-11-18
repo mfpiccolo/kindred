@@ -7,11 +7,13 @@ class App.Base
     # @binder = new App.DataBinder(@id, @model)
     @attributes = {}
     @template = @opts.template
-    @uuid = @opts.uuid
 
     if @opts.attrs?
       $.each @opts.attrs, (key, val) =>
         @set key, val
+
+    @uuid = @opts.uuid || @attribute.uuid || App.UUID.generate()
+    @id = @opts.id || @attributes.id
 
   # The attribute setter publish changes using the DataBinder PubSub
   set: (attr_name, val) ->
@@ -55,7 +57,7 @@ class App.Base
   append_to_page: ->
     # Replaces the html with uuid and id data attributes
     template = @template.replace(/\b(data-adq-uuid)\.?[^\s]+/g, "data-adq-uuid=" + @uuid)
-    template = template.replace(/\b(data-id)\.?[^\s]+/g, "data-id=" + @attributes.id)
+    template = template.replace(/\b(data-id)\.?[^\s]+/g, "data-id=" + @id)
 
     $template = $(template)
     $.each @attributes, (key, value) =>
