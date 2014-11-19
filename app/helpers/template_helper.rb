@@ -10,7 +10,7 @@ module TemplateHelper
   end
 
   def template(collection:, &block)
-    content_for :adq_script do
+    content_for :kindred_script do
       js(
         args: {
           template: capture(&block),
