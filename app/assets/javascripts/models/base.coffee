@@ -6,14 +6,20 @@ class App.Base
 
     # @binder = new App.DataBinder(@id, @model)
     @attributes = {}
-    @template = @opts.template
+    template = @opts.template || App[@constructor.name].template
 
     if @opts.attrs?
       $.each @opts.attrs, (key, val) =>
         @set key, val
 
-    @uuid = @opts.uuid || @attribute.uuid || App.UUID.generate()
+    @uuid = @opts.uuid || @attributes.uuid || App.UUID.generate()
     @id = @opts.id || @attributes.id
+
+    @template = template.replace(/\b(data-adq-uuid)\.?[^\s]+/g, "data-adq-uuid=" + @uuid)
+    @template = @template.replace(/\b(data-id)\.?[^\s]+/g, "data-id=" + @id)
+
+  @set_template: (template) ->
+    @template = template
 
   # The attribute setter publish changes using the DataBinder PubSub
   set: (attr_name, val) ->
@@ -29,8 +35,8 @@ class App.Base
 
   save: ->
     @route ||= @model.replace("-", "_") + "s"
-    if @attributes.id?
-      url = "/" + @route + "/" + @attributes.id + ".json"
+    if !isNaN(parseFloat(@id)) && isFinite(@id)
+      url = "/" + @route + "/" + @id + ".json"
       method = "PATCH"
     else
       url = "/" + @route + ".json"
@@ -50,18 +56,26 @@ class App.Base
         { data: data, status: textStatus }
     ).responseText
 
+  destroy: ->
+    @route ||= @model.replace("-", "_") + "s"
+    url = "/" + @route + "/" + @id + ".json"
+    method = "DELETE"
+
+    $.ajax
+      type: method
+      url: url
+      dataType: "json"
+      global: false
+      async: false
+
   set_attributes: (attrs) ->
     $.each attrs, (attr, val) =>
       @set(attr, val)
 
   append_to_page: ->
-    # Replaces the html with uuid and id data attributes
-    template = @template.replace(/\b(data-adq-uuid)\.?[^\s]+/g, "data-adq-uuid=" + @uuid)
-    template = template.replace(/\b(data-id)\.?[^\s]+/g, "data-id=" + @id)
-
-    $template = $(template)
+    $template = $(@template)
     $.each @attributes, (key, value) =>
-      input = $(template).find("input[data-attr='" + key + "']")
+      input = $($template).find("input[data-attr='" + key + "']")
       if input.length
         input = $template.find("input[data-attr='" + key + "']")
         input.val(value)
@@ -72,7 +86,8 @@ class App.Base
     $("input[data-adq-uuid='" + @uuid + "']").each (i, input) =>
       $input = $(input)
       @set $input.data("attr"), $input.val()
-      @set "id", $input.data("id")
+      if $input.data("id")?
+        @id = $input.data("id")
     @
 
 
