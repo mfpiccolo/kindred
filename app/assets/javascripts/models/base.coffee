@@ -15,7 +15,7 @@ class App.Base
     @uuid = @opts.uuid || @attributes.uuid || App.UUID.generate()
     @id = @opts.id || @attributes.id
 
-    @template = template.replace(/\b(data-adq-uuid)\.?[^\s]+/g, "data-adq-uuid=" + @uuid)
+    @template = template.replace(/\b(data-k-uuid)\.?[^\s]+/g, "data-k-uuid=" + @uuid)
     @template = @template.replace(/\b(data-id)\.?[^\s]+/g, "data-id=" + @id)
 
   @set_template: (template) ->
@@ -33,6 +33,24 @@ class App.Base
   get: (attr_name) ->
     @attributes[attr_name]
 
+  handle_errors: (errors_obj, uuid) ->
+    if @error?
+      hideable_error_inputs = $(Object.keys(@attributes)).not(Object.keys(errors_obj)).get()
+      $.each hideable_error_inputs, (i, attr) =>
+        $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']").hide()
+
+      $.each errors_obj, (attr, messages) =>
+        error_tag = $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']")
+        error_tag.html("")
+
+        $.each messages, (i, message) ->
+          error_tag.append("<span>" + message + "</span><br>")
+
+        error_tag.show()
+    else
+      $.each @attributes, (attr, val) =>
+        $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']").hide()
+
   save: ->
     @route ||= @model.replace("-", "_") + "s"
     if !isNaN(parseFloat(@id)) && isFinite(@id)
@@ -45,7 +63,7 @@ class App.Base
     params = {}
     params[@model.replace("-", "_")] = @attributes
 
-    JSON.parse $.ajax(
+    response = $.ajax(
       type: method
       url: url
       dataType: "json"
@@ -53,20 +71,27 @@ class App.Base
       global: false
       async: false
       success: (data, textStatus, xhr) ->
-        { data: data, status: textStatus }
+        xhr.status
+      error: (data, textStatus, xhr) =>
+        @error = data.status
     ).responseText
+
+    obj = JSON.parse(response)
+
+    @handle_errors(obj)
 
   destroy: ->
     @route ||= @model.replace("-", "_") + "s"
     url = "/" + @route + "/" + @id + ".json"
     method = "DELETE"
 
-    $.ajax
-      type: method
-      url: url
-      dataType: "json"
-      global: false
-      async: false
+    if !isNaN(parseFloat(@id)) && isFinite(@id)
+      $.ajax
+        type: method
+        url: url
+        dataType: "json"
+        global: false
+        async: false
 
   set_attributes: (attrs) ->
     $.each attrs, (attr, val) =>
@@ -80,14 +105,24 @@ class App.Base
         input = $template.find("input[data-attr='" + key + "']")
         input.val(value)
 
+    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @model.replace("-", "_") + " data-parent-type=" + @parent + " data-parent-id=" + @parent_id + "></div>"
+    $("[data-kindred-model]").append(model_div)
+
     $("[data-append='" + @model + "']").append($template)
 
+    unless @error?
+      error_tag = $("[data-error][data-k-uuid='" + @uuid + "']")
+      error_tag.hide()
+
   assign_attributes_from_page: ->
-    $("input[data-adq-uuid='" + @uuid + "']").each (i, input) =>
+    $("input[data-k-uuid='" + @uuid + "']").each (i, input) =>
       $input = $(input)
       @set $input.data("attr"), $input.val()
-      if $input.data("id")?
-        @id = $input.data("id")
+
+      model_data = $("[data-kindred-model]").find("[data-k-uuid='" + @uuid + "']")
+      if !isNaN(parseFloat(model_data.data("id"))) && isFinite(model_data.data("id"))
+        @id = model_data.data("id")
     @
+
 
 
