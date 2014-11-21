@@ -20,7 +20,7 @@ module TemplateHelper
       class_name = object.class.name.underscore.downcase.to_sym
     end
 
-    text_field_tag attribute, nil, data: { attr: attribute, k_uuid: object_or_class_name.try(:uuid) }
+    text_field_tag attribute, nil, data: { attr: attribute, k_uuid: object_or_class_name.try(:uuid), val: "" }
   end
 
   def error_for(object_or_class_name, attribute)
