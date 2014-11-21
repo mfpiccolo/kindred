@@ -15,8 +15,9 @@ class App.Base
     @uuid = @opts.uuid || @attributes.uuid || App.UUID.generate()
     @id = @opts.id || @attributes.id
 
-    @template = template.replace(/\b(data-k-uuid)\.?[^\s]+/g, "data-k-uuid=" + @uuid)
-    @template = @template.replace(/\b(data-id)\.?[^\s]+/g, "data-id=" + @id)
+    @template = template.replace(/\b(data-k-uuid)\.?[^\s|>]+/g, "data-k-uuid=" + @uuid)
+    @template = @template.replace(/\b(data-id)\.?[^\s|>]+/g, "data-id=" + @id)
+    @build_attrs_template()
 
   @set_template: (template) ->
     @template = template
@@ -77,8 +78,12 @@ class App.Base
     ).responseText
 
     obj = JSON.parse(response)
+    @set_attributes(obj)
 
     @handle_errors(obj)
+
+    unless @error?
+      @update_data_vals()
 
   destroy: ->
     @route ||= @model.replace("-", "_") + "s"
@@ -95,6 +100,8 @@ class App.Base
 
   set_attributes: (attrs) ->
     $.each attrs, (attr, val) =>
+      if attr == "id" && !isNaN(parseFloat(val)) && isFinite(val)
+        @id = val
       @set(attr, val)
 
   append_to_page: ->
@@ -124,5 +131,37 @@ class App.Base
         @id = model_data.data("id")
     @
 
+  build_attrs_template: ->
+    $.each @attributes, (attr, val) =>
+      j_attr = $(@template).find("input[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']")
+      clone = j_attr.clone()
 
+      replace_string = clone.wrap('<span/>').parent().html()
+
+      cloned_template = $(@template).clone()
+      updated_template = $("<div />").append($(@template).clone()).html()
+
+
+      if replace_string? && replace_string.length
+        replace_regex = new RegExp(replace_string)
+
+        new_attr_string = replace_string.replace(/\b(data-val)\.?[^\s]+/g, "data-val='" + val + "'")
+
+        @template = updated_template.replace(replace_regex, new_attr_string)
+
+  dirty: ->
+    dirty = []
+    $.each $("input[data-k-uuid='" + @uuid + "']"), (i, attr) =>
+      dirty_object = {}
+      unless $(attr).data("val").toString() == $(attr).val().toString()
+        dirty.push(dirty_object[attr] = [$(attr).data("val").toString(), $(attr).val().toStrin])
+
+    if dirty.length
+      true
+    else
+      false
+
+  update_data_vals: ->
+    $.each @attributes, (attr, val) =>
+      $("input[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").data("val", val)
 
