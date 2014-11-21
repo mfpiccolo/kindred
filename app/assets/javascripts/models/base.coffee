@@ -112,8 +112,7 @@ class App.Base
         input = $template.find("input[data-attr='" + key + "']")
         input.val(value)
 
-    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @model.replace("-", "_") + " data-parent-type=" + @parent + " data-parent-id=" + @parent_id + "></div>"
-    $("[data-kindred-model]").append(model_div)
+    @append_data_model()
 
     $("[data-append='" + @model + "']").append($template)
 
@@ -162,6 +161,11 @@ class App.Base
       false
 
   update_data_vals: ->
+    model_data = $("[data-kindred-model]").find("[data-k-uuid='" + @uuid + "']")
+    model_data.data("id", @id)
     $.each @attributes, (attr, val) =>
       $("input[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").data("val", val)
 
+  append_data_model: ->
+    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @model.replace("-", "_") + " data-parent-type=" + @parent + " data-parent-id=" + @parent_id + "></div>"
+    $("[data-kindred-model]").append(model_div)
