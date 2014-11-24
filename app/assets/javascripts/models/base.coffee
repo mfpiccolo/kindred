@@ -1,10 +1,12 @@
 class App.Base
   constructor: (@opts) ->
+    @opts ||= {}
+
     dash_str = @constructor.name.replace /([A-Z])/g, ($1) ->
       "-" + $1.toLowerCase()
-    @model = dash_str[1 .. dash_str.length - 1]
+    @model_name = dash_str[1 .. dash_str.length - 1]
 
-    # @binder = new App.DataBinder(@id, @model)
+    # @binder = new App.DataBinder(@id, @model_name)
     @attributes = {}
     template = @opts.template || App[@constructor.name].template
 
@@ -15,9 +17,10 @@ class App.Base
     @uuid = @opts.uuid || @attributes.uuid || App.UUID.generate()
     @id = @opts.id || @attributes.id
 
-    @template = template.replace(/\b(data-k-uuid)\.?[^\s|>]+/g, "data-k-uuid=" + @uuid)
-    @template = @template.replace(/\b(data-id)\.?[^\s|>]+/g, "data-id=" + @id)
-    @build_attrs_template()
+    if template?
+      @template = template.replace(/\b(data-k-uuid)\.?[^\s|>]+/g, "data-k-uuid=" + @uuid)
+      @template = @template.replace(/\b(data-id)\.?[^\s|>]+/g, "data-id=" + @id)
+      @build_attrs_template()
 
   @set_template: (template) ->
     @template = template
@@ -53,16 +56,24 @@ class App.Base
         $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']").hide()
 
   save: ->
-    @route ||= @model.replace("-", "_") + "s"
+    @route ||= @model_name.replace("-", "_") + "s"
     if !isNaN(parseFloat(@id)) && isFinite(@id)
-      url = "/" + @route + "/" + @id + ".json"
-      method = "PATCH"
+
+      # TODO REMOVE THIS AFTER WEBKIT BUG FIX. https://github.com/thoughtbot/capybara-webkit/issues/553
+      # This conditonal is for testing but there is no easy fix at the moment.
+      # Put passes through data.  Patch dosn't.
+      if (userAgent = window?.navigator?.userAgent).match /capybara-webkit/ || userAgent.match /PhantomJS/
+        url = "/" + @route + "/" + @id + ".json"
+        method = 'PUT'
+      else
+        url = "/" + @route + "/" + @id + ".json"
+        method = 'PATCH'
     else
       url = "/" + @route + ".json"
       method = "POST"
 
     params = {}
-    params[@model.replace("-", "_")] = @attributes
+    params[@model_name.replace("-", "_")] = @attributes
 
     response = $.ajax(
       type: method
@@ -86,7 +97,7 @@ class App.Base
       @update_data_vals()
 
   destroy: ->
-    @route ||= @model.replace("-", "_") + "s"
+    @route ||= @model_name.replace("-", "_") + "s"
     url = "/" + @route + "/" + @id + ".json"
     method = "DELETE"
 
@@ -114,7 +125,7 @@ class App.Base
 
     @append_data_model()
 
-    $("[data-append='" + @model + "']").append($template)
+    $("[data-append='" + @model_name + "']").append($template)
 
     unless @error?
       error_tag = $("[data-error][data-k-uuid='" + @uuid + "']")
@@ -167,5 +178,5 @@ class App.Base
       $("input[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").data("val", val)
 
   append_data_model: ->
-    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @model.replace("-", "_") + " data-parent-type=" + @parent + " data-parent-id=" + @parent_id + "></div>"
+    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @model_name.replace("-", "_") + " data-parent-type=" + @parent + " data-parent-id=" + @parent_id + "></div>"
     $("[data-kindred-model]").append(model_div)
