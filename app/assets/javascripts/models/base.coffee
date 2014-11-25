@@ -51,22 +51,22 @@ class App.Base
     @attributes[attr_name]
 
   handle_errors: (errors_obj, uuid) ->
-    if @error?
-      hideable_error_inputs = $(Object.keys(@attributes)).not(Object.keys(errors_obj)).get()
-      $.each hideable_error_inputs, (i, attr) =>
-        $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']").hide()
+    hideable_error_inputs = $(Object.keys(@attributes)).not(Object.keys(errors_obj)).get()
+    $.each hideable_error_inputs, (i, attr) =>
+      $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']").hide()
 
-      $.each errors_obj, (attr, messages) =>
-        error_tag = $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']")
-        error_tag.html("")
+    $.each errors_obj, (attr, messages) =>
+      error_tag = $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']")
+      error_tag.html("")
 
-        $.each messages, (i, message) ->
-          error_tag.append("<span>" + message + "</span><br>")
+      $.each messages, (i, message) ->
+        error_tag.append("<span>" + message + "</span><br>")
 
-        error_tag.show()
-    else
-      $.each @attributes, (attr, val) =>
-        $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']").hide()
+      error_tag.show()
+
+  clear_errors: () ->
+    $.each @attributes, (attr, val) =>
+      $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']").hide()
 
   save: ->
     @route ||= @model_name.replace("-", "_") + "s"
@@ -88,26 +88,21 @@ class App.Base
     params = {}
     params[@model_name.replace("-", "_")] = @attributes
 
-    response = $.ajax(
+    response = $.ajax
       type: method
       url: url
       dataType: "json"
       data: params
       global: false
       async: false
-      success: (data, textStatus, xhr) ->
-        xhr.status
+      success: (data, textStatus, xhr) =>
+        @set_attributes(data)
+        @clear_errors()
+        @update_data_vals()
       error: (xhr) =>
-        @error = xhr.status
-    ).responseText
+        errors = JSON.parse(xhr.responseText)
+        @handle_errors(errors)
 
-    obj = JSON.parse(response)
-    @set_attributes(obj)
-
-    @handle_errors(obj)
-
-    unless @error?
-      @update_data_vals()
 
   destroy: ->
     @route ||= @model_name.replace("-", "_") + "s"
@@ -121,6 +116,8 @@ class App.Base
         dataType: "json"
         global: false
         async: false
+
+      # TODO: Remove error divs
 
   set_attributes: (attrs) ->
     $.each attrs, (attr, val) =>
