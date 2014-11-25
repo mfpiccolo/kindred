@@ -17,6 +17,8 @@ class App.Base
     @uuid = @opts.uuid || @attributes.uuid || App.UUID.generate()
     @id = @opts.id || @attributes.id
 
+    @attributes["uuid"] = @uuid
+
     if template?
       @template = template.replace(/\b(data-k-uuid)\.?[^\s|>]+/g, "data-k-uuid=" + @uuid)
       @template = @template.replace(/\b(data-id)\.?[^\s|>]+/g, "data-id=" + @id)
@@ -24,6 +26,17 @@ class App.Base
 
   @set_template: (template) ->
     @template = template
+
+  @collection_from_page: (model_name) ->
+    indices = $("[data-kindred-model]").find("[data-k-uuid][data-class='#{model_name}']")
+    uuids = []
+
+    indices.map (i, tag) ->
+      uuids.push($(tag).data("k-uuid"))
+
+    # map args for JS array seem to differ from jQuery array above
+    collection_attrs = uuids.map (uuid, i) ->
+      new App.LineItem({uuid: uuid}).assign_attributes_from_page().attributes
 
   # The attribute setter publish changes using the DataBinder PubSub
   set: (attr_name, val) ->
@@ -84,8 +97,8 @@ class App.Base
       async: false
       success: (data, textStatus, xhr) ->
         xhr.status
-      error: (data, textStatus, xhr) =>
-        @error = data.status
+      error: (xhr) =>
+        @error = xhr.status
     ).responseText
 
     obj = JSON.parse(response)
