@@ -16,20 +16,19 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
     @attributes[attr_name]
 
   save: ->
-    @route ||= @snake_name + "s"
     if !isNaN(parseFloat(@id)) && isFinite(@id)
 
       # TODO REMOVE THIS AFTER WEBKIT BUG FIX. https://github.com/thoughtbot/capybara-webkit/issues/553
       # This conditonal is for testing but there is no easy fix at the moment.
       # Put passes through data.  Patch dosn't.
       if (userAgent = window?.navigator?.userAgent).match /capybara-webkit/ || userAgent.match /PhantomJS/
-        url = "/" + @route + "/" + @id + ".json"
+        url = @route + "/" + @id + ".json"
         method = 'PUT'
       else
-        url = "/" + @route + "/" + @id + ".json"
+        url = @route + "/" + @id + ".json"
         method = 'PATCH'
     else
-      url = "/" + @route + ".json"
+      url = @route + ".json"
       method = "POST"
 
     params = {}
@@ -49,7 +48,7 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
   destroy: ->
     @route ||= @snake_name + "s"
-    url = "/" + @route + "/" + @id + ".json"
+    url = @route + "/" + @id + ".json"
     method = "DELETE"
 
     if !isNaN(parseFloat(@id)) && isFinite(@id)

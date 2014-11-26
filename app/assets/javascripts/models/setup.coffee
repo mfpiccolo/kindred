@@ -2,6 +2,8 @@ class App.Setup
   constructor: (@opts) ->
     @_set_name_properties()
     @_set_self()
+    @route ||= App[@constructor.name].route
+    @route ||= "/" + @snake_name + "s"
 
     @opts ||= {}
 
@@ -22,16 +24,21 @@ class App.Setup
       @template = @template.replace(/\b(data-id)\.?[^\s|>]+/g, "data-id=" + @id)
       @_build_attrs_template()
 
+  @set_class_name_variables: (class_name) ->
+    @class_name = class_name
+    @dash_name =  @_get_dash_name(class_name)
+    @snake_name = @_get_snake_name(class_name)
+
   @_get_class_name: ->
     @name
 
-  @_get_dash_name: ->
-    dash_str = @name.replace /([A-Z])/g, ($1) ->
+  @_get_dash_name: (name) ->
+    dash_str = name.replace /([A-Z])/g, ($1) ->
       "-" + $1.toLowerCase()
     dash_str[1 .. dash_str.length - 1]
 
-  @_get_snake_name: ->
-    under_str = @name.replace /([A-Z])/g, ($1) ->
+  @_get_snake_name: (name) ->
+    under_str = name.replace /([A-Z])/g, ($1) ->
       "_" + $1.toLowerCase()
     under_str[1 .. under_str.length - 1]
 
@@ -39,9 +46,9 @@ class App.Setup
     @_self = @
 
   _set_name_properties: =>
-    @class_name = App[@constructor.name]._get_class_name()
-    @dash_name =  App[@constructor.name]._get_dash_name()
-    @snake_name = App[@constructor.name]._get_snake_name()
+    @class_name ||= App[@constructor.name].class_name
+    @dash_name =  App[@constructor.name]._get_dash_name(@class_name)
+    @snake_name = App[@constructor.name].snake_name
 
   _build_attrs_template: ->
     $.each @attributes, (attr, val) =>

@@ -1,7 +1,7 @@
 class App.ActivePage
 
   @collection_from_page: ->
-    indices = $("[data-kindred-model]").find("[data-k-uuid][data-class='#{@get_snake_name()}']")
+    indices = $("[data-kindred-model]").find("[data-k-uuid][data-class='#{@_get_snake_name()}']")
     uuids = []
 
     indices.map (i, tag) ->
