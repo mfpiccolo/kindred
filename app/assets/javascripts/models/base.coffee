@@ -59,11 +59,11 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
         global: false
         async: false
         success: (data, textStatus, xhr) =>
-          @after_destory(data, textStatus, xhr)
+          @after_destroy(data, textStatus, xhr)
         error: (xhr) =>
           @after_destroy_error(xhr)
     else
-      @remove_errors_from_page()
+      @after_destroy()
 
   assign_attributes: (attrs) ->
     $.each attrs, (attr, val) =>
@@ -83,7 +83,7 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
     @_handle_errors(errors)
 
   #overwritable hook
-  after_destory: (data, textStatus, xhr) ->
+  after_destroy: (data, textStatus, xhr) ->
     @remove_errors_from_page()
 
   #overwritable hook
