@@ -58,8 +58,12 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
         dataType: "json"
         global: false
         async: false
-
-      # TODO: Remove error divs
+        success: (data, textStatus, xhr) =>
+          @after_destory(data, textStatus, xhr)
+        error: (xhr) =>
+          @after_destroy_error(xhr)
+    else
+      @remove_errors_from_page()
 
   assign_attributes: (attrs) ->
     $.each attrs, (attr, val) =>
@@ -77,6 +81,13 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
   after_save_error: (xhr) ->
     errors = JSON.parse(xhr.responseText)
     @_handle_errors(errors)
+
+  #overwritable hook
+  after_destory: (data, textStatus, xhr) ->
+    @remove_errors_from_page()
+
+  #overwritable hook
+  after_destroy_error: (xhr) ->
 
   _handle_errors: (errors_obj, uuid) ->
     hideable_error_inputs = $(Object.keys(@attributes)).not(Object.keys(errors_obj)).get()

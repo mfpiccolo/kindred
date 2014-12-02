@@ -1,7 +1,7 @@
 class App.ActivePage
 
   @collection_from_page: ->
-    indices = $("[data-kindred-model]").find("[data-k-uuid][data-class='#{@_get_snake_name()}']")
+    indices = $("[data-kindred-model]").find("[data-k-uuid][data-class='#{@snake_name}']")
     uuids = []
 
     indices.map (i, tag) ->
@@ -47,6 +47,10 @@ class App.ActivePage
       if !isNaN(parseFloat(model_data.data("id"))) && isFinite(model_data.data("id"))
         @id = model_data.data("id")
     @
+
+  remove_errors_from_page: ->
+    $("[data-error][data-k-uuid='" + @uuid + "']").each (i, elem) =>
+      $(elem).remove()
 
   _update_data_vals_on_page: ->
     model_data = $("[data-kindred-model]").find("[data-k-uuid='" + @uuid + "']")
