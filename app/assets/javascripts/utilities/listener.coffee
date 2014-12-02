@@ -17,7 +17,7 @@ class App.Listener
         namespaces = listener_namespace.slice(1, -1)
 
         listener_info = {
-          event_trigger: event_trigger,
+          trigger: event_trigger,
           element: element,
           name: listener_name,
           funct: listener_function
