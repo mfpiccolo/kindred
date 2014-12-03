@@ -1,36 +1,35 @@
 class App.Listener
+  # Create a closure so that we can define intermediary
+  # method pointers that don't collide with other items
+  # in the global name space.
+  (->
+    # Store a reference to the original remove method.
+    originalOnMethod = jQuery.fn.on
 
-    # Create a closure so that we can define intermediary
-    # method pointers that don't collide with other items
-    # in the global name space.
-    (->
-      # Store a reference to the original remove method.
-      originalOnMethod = jQuery.fn.on
+    # Define overriding method.
+    jQuery.fn.on = ->
+      listener_function = arguments[2]
+      element = arguments[1]
+      listener_namespace = arguments[0].split(".")
+      event_trigger = listener_namespace[0]
+      listener_name = listener_namespace[listener_namespace.length - 1]
+      namespaces = listener_namespace.slice(1, -1)
 
-      # Define overriding method.
-      jQuery.fn.on = ->
-        listener_function = arguments[2]
-        element = arguments[1]
-        listener_namespace = arguments[0].split(".")
-        event_trigger = listener_namespace[0]
-        listener_name = listener_namespace[listener_namespace.length - 1]
-        namespaces = listener_namespace.slice(1, -1)
+      listener_info = {
+        trigger: event_trigger,
+        element: element,
+        name: listener_name,
+        funct: listener_function
+      }
 
-        listener_info = {
-          trigger: event_trigger,
-          element: element,
-          name: listener_name,
-          funct: listener_function
-        }
+      App.Listener.createNestedObject(App, namespaces, listener_info)
 
-        createNestedObject(App, namespaces, listener_info)
-
-        # Execute the original method.
-        originalOnMethod.apply this, arguments
-        return
-
+      # Execute the original method.
+      originalOnMethod.apply this, arguments
       return
-    )()
+
+    return
+  )()
 
   @createNestedObject = (base, names, value) ->
 
@@ -53,3 +52,5 @@ class App.Listener
 
     # Return the last object in the hierarchy:
     base
+
+
