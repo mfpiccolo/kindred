@@ -1,16 +1,33 @@
 module TemplateHelper
-
-  def template(collection:, &block)
-    content_for :kindred_script do
-      js(
-        args: {
-          template: capture(&block),
-          collection: collection.to_json,
-        },
-        rendered: true
-      )
+  def template(model: nil, collection: nil, target:, &block)
+    model_name = if collection.present?
+      ActiveModel::Naming.singular(LineItem.first)
+    else
+      model
     end
+
+    @kindred_hash ||= {}
+    @kindred_hash.merge!({
+      model_name => {
+        template: capture(&block),
+        collection: collection,
+      }
+    })
+    self.controller.instance_variable_set(:@kindred_hash, @kindred_hash)
+    return nil
   end
+
+  # def template(collection:, &block)
+  #   content_for :kindred_script do
+  #     js(
+  #       args: {
+  #         template: capture(&block),
+  #         collection: collection.to_json,
+  #       },
+  #       rendered: true
+  #     )
+  #   end
+  # end
 
   # TODO write five methods for each type of input
   def text_field_tag_for(object_or_class_name, attribute)
