@@ -5,6 +5,7 @@
 //= require ./utilities/logger
 //= require ./utilities/listener
 //= require ./utilities/template
+//= require ./utilities/stack_trace
 //= require ./models/setup
 //= require ./models/active_page
 //= require ./models/base
