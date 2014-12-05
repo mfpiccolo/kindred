@@ -21,7 +21,7 @@ class App.ActivePage
 
     @_append_data_model_to_page()
 
-    $("[data-append='" + @dash_name + "']").append($template)
+    $("[data-target='" + @dash_name + "']").append($template)
 
     error_tag = $("[data-error][data-k-uuid='" + @uuid + "']")
     error_tag.hide()
