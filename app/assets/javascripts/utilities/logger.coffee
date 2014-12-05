@@ -1,7 +1,7 @@
 class App.Logger
   @add_error: (error_object) ->
-    @error ||= []
-    @error.push(error_object)
+    @errors ||= []
+    @errors.push(error_object)
 
 jQueryInit = $.fn.init
 $.fn.init = (selector, context) ->
