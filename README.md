@@ -69,9 +69,9 @@ If you passed a line_item you could access it with:
 
 You could then get access to the collection or the template by using those properties.
 
-`li_info.template' would return the html you passed through
+`li_info.template` would return the html you passed through
 
-`li_info.collection' would return the json collection
+`li_info.collection` would return the json collection
 
 ###Controllers
 In kindred, javascript controllers are a client side augmentation of your ruby controllers.  They are just client side code that gets run on page load.
@@ -134,7 +134,7 @@ class App.LineItem extends App.Base
 `assign_attributes(attrs)` Adds the attrs to the attributes object for the model instance.
 
 #####Base Overridable Hooks:
-These hooks have defalut functionality but you can override them to do custom behavior.
+These hooks have defalut functionality but you can override them in the model to do custom behavior.
 
 `after_save`
 
@@ -143,6 +143,19 @@ These hooks have defalut functionality but you can override them to do custom be
 `after_destroy`
 
 `after_destroy_error`
+
+Here is an example where you are removing relevant errors from the page after deleting a line item.
+
+```coffeescript
+class App.LineItem extends App.Base
+
+  @route = "/line_items"
+  @set_class_name("LineItem")
+
+  # kindred override hook
+  after_destroy: (data, textStatus, xhr) ->
+    $("[data-error][data-k-uuid='" + @uuid + "']").parent().parent().remove()
+```
 
 ####Class Functions
 
