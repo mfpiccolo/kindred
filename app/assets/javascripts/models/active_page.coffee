@@ -16,8 +16,10 @@ class App.ActivePage
     $.each @attributes, (key, value) =>
       input = $($template).find("input[data-attr='" + key + "']")
       if input.length
-        input = $template.find("input[data-attr='" + key + "']")
-        input.val(value)
+        if input.is(':checkbox')
+          input.prop('checked', value)
+        else
+          input.val(value)
 
     @_append_data_model_to_page()
 
@@ -28,10 +30,14 @@ class App.ActivePage
 
   dirty_from_page: ->
     dirty = []
-    $.each $("input[data-k-uuid='" + @uuid + "']"), (i, attr) =>
+    $.each $("input[data-k-uuid='" + @uuid + "']"), (i, input) =>
+      $input = $(input)
+
       dirty_object = {}
-      unless $(attr).data("val").toString() == $(attr).val().toString()
-        dirty.push(dirty_object[attr] = [$(attr).data("val").toString(), $(attr).val().toStrin])
+      attr = $input.data("attr")
+
+      unless @_input_dirty($input) || @_checkbox_dirty($input)
+        dirty.push(dirty_object[attr] = [$input.data("val").toString(), $input.val().toStrin])
 
     if dirty.length
       true
@@ -41,7 +47,11 @@ class App.ActivePage
   assign_attributes_from_page: ->
     $("input[data-k-uuid='" + @uuid + "']").each (i, input) =>
       $input = $(input)
-      @set $input.data("attr"), $input.val()
+
+      if $input.is(':checkbox')
+        @set $input.data("attr"), $input.prop('checked')
+      else
+        @set $input.data("attr"), $input.val()
 
       model_data = $("[data-kindred-model]").find("[data-k-uuid='" + @uuid + "']")
       if !isNaN(parseFloat(model_data.data("id"))) && isFinite(model_data.data("id"))
@@ -61,3 +71,9 @@ class App.ActivePage
   _append_data_model_to_page: ->
     model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @snake_name + " data-parent-type=" + @parent + " data-parent-id=" + @parent_id + "></div>"
     $("[data-kindred-model]").append(model_div)
+
+  _input_dirty: (input) ->
+    (input.data("val").toString() == input.val().toString())
+
+  _checkbox_dirty: (input) ->
+    (input.is(':checkbox') && (input.data("val") == input.prop('checked')))
