@@ -24,7 +24,7 @@ class App.Setup
       @template = @template.replace(/\b(data-id)\.?[^\s|>]+/g, "data-id=" + @id)
       @_build_attrs_template()
 
-  @set_class_name_variables: (class_name) ->
+  @set_class_name: (class_name) ->
     @class_name = class_name
     @dash_name =  @_get_dash_name(class_name)
     @snake_name = @_get_snake_name(class_name)
