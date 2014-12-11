@@ -1,5 +1,7 @@
 kindred
 ============
+
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/mfpiccolo/kindred?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 | Project                 |  Gem Release      |
 |------------------------ | ----------------- |
 | Gem name                |  kindred      |
