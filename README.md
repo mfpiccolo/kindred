@@ -100,7 +100,7 @@ end
 
 A kindred model is an object that helps the interaction between the page and the rails api.
 
-Here is an example model of the code needed for a model:
+Here is an example model:
 
 ```coffeescript
 class App.LineItem extends App.Base
