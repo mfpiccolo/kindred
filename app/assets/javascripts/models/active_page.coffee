@@ -14,12 +14,16 @@ class App.ActivePage
   append_to_page: ->
     $template = $(@template)
     $.each @attributes, (key, value) =>
-      input = $($template).find("input[data-attr='" + key + "']")
+      input = $template.find("input[data-attr='" + key + "']")
       if input.length
         if input.is(':checkbox')
           input.prop('checked', value)
         else
           input.val(value)
+
+      select = $template.find("select[data-attr='" + key + "']")
+      if select.length
+        select.val(value)
 
     @_append_data_model_to_page()
 
@@ -30,14 +34,14 @@ class App.ActivePage
 
   dirty_from_page: ->
     dirty = []
-    $.each $("input[data-k-uuid='" + @uuid + "']"), (i, input) =>
+    $.each $("input[data-k-uuid='" + @uuid + "'], select[data-k-uuid='" + @uuid + "']"), (i, input) =>
       $input = $(input)
 
       dirty_object = {}
       attr = $input.data("attr")
 
       unless @_input_dirty($input) || @_checkbox_dirty($input)
-        dirty.push(dirty_object[attr] = [$input.data("val").toString(), $input.val().toStrin])
+        dirty.push(dirty_object[attr] = [$input.data("val").toString(), $input.val().toString()])
 
     if dirty.length
       true
@@ -56,6 +60,10 @@ class App.ActivePage
       model_data = $("[data-kindred-model]").find("[data-k-uuid='" + @uuid + "']")
       if !isNaN(parseFloat(model_data.data("id"))) && isFinite(model_data.data("id"))
         @id = model_data.data("id")
+
+    $("select[data-k-uuid='" + @uuid + "']").each (i, select) =>
+      @set $(select).data("attr"), $(select).val()
+
     @
 
   remove_errors_from_page: ->
@@ -66,7 +74,7 @@ class App.ActivePage
     model_data = $("[data-kindred-model]").find("[data-k-uuid='" + @uuid + "']")
     model_data.data("id", @id)
     $.each @attributes, (attr, val) =>
-      $("input[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").data("val", val)
+      $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").data("val", val)
 
   _append_data_model_to_page: ->
     model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @snake_name + " data-parent-type=" + @parent + " data-parent-id=" + @parent_id + "></div>"

@@ -52,7 +52,7 @@ class App.Setup
 
   _build_attrs_template: ->
     $.each @attributes, (attr, val) =>
-      j_attr = $(@template).find("input[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']")
+      j_attr = $(@template).find("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']")
       clone = j_attr.clone()
 
       replace_string = clone.wrap('<span/>').parent().html()
