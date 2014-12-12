@@ -40,7 +40,7 @@ class App.ActivePage
       dirty_object = {}
       attr = $input.data("attr")
 
-      unless @_input_dirty($input) || @_checkbox_dirty($input)
+      if @_input_dirty($input)
         dirty.push(dirty_object[attr] = [$input.data("val").toString(), $input.val().toString()])
 
     if dirty.length
@@ -81,7 +81,9 @@ class App.ActivePage
     $("[data-kindred-model]").append(model_div)
 
   _input_dirty: (input) ->
-    (input.data("val").toString() == input.val().toString())
-
-  _checkbox_dirty: (input) ->
-    (input.is(':checkbox') && (input.data("val") == input.prop('checked')))
+    if input.is("select") && input.data("val").length == 0
+      false
+    else if input.is(":checkbox")
+      !(input.data("val").toString() == input.prop("checked").toString())
+    else
+      !(input.data("val").toString() == input.val().toString())
