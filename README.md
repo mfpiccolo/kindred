@@ -125,13 +125,53 @@ class App.LineItem extends App.Base
 
 `set(attr_name, val)` Assigns the value to the model instance attributes object using the attribute name as a key.
 
+```coffeescript
+li = new App.LineItem()
+li.set("foo", "bar")
+li.attributes # => Object {uuid: "some-uuid", foo: "bar"}
+```
+
 `get(attr_name)` Retrieves the value from the model instance attributes object using the attribute name.
+
+```coffeescript
+li = new App.LineItem({foo: "bar"})
+li.get("foo") # => "bar"
+```
 
 `save()` ajax post request to the route specified in the model with the data from the model instance attributes object to either post or patch depending on the presence of the id.
 
+```coffeescript
+li = new App.LineItem({foo: "bar"})
+li.save() # => sends request to POST or PATCH depending on presince of id
+```
+
+```
+# Server log
+Started POST "/line_items.json" for 127.0.0.1 at 2014-12-14 02:35:32 -0800
+Processing by LineItemsController#create as JSON
+  Parameters: {"line_item"=>{"uuid"=>"354f1fb8-a80a-449d-2320-e316bb02390c", "foo"=>"bar"}}
+```
+
 `destroy()` ajax delete request to the route specified in the model.
 
+```coffeescript
+li = new App.LineItem({id: 1})
+li.destroy() # => Removes element from the page and sends delete request if id present
+```
+
+```
+# Server log
+Started DELETE "/line_items/1.json" for 127.0.0.1 at 2014-12-14 02:41:39 -0800
+Processing by LineItemsController#destroy as JSON
+  Parameters: {"id"=>"1"}
+```
+
 `assign_attributes(attrs)` Adds the attrs to the attributes object for the model instance.
+
+```coffeescript
+li = new App.LineItem({foo: "bar", baz: "qux"})
+li.get
+```
 
 #####Base Overridable Hooks:
 These hooks have defalut functionality but you can override them in the model to do custom behavior.
