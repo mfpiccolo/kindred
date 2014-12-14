@@ -169,8 +169,9 @@ Processing by LineItemsController#destroy as JSON
 `assign_attributes(attrs)` Adds the attrs to the attributes object for the model instance.
 
 ```coffeescript
-li = new App.LineItem({foo: "bar", baz: "qux"})
-li.get
+li = new App.LineItem({foo: "bar"})
+li.assign_attributes({baz: qux, quux: "corge"})
+li.attributes # => Object {uuid: "some-uuid", foo: "bar", baz: "qux", quux: "corge"}
 ```
 
 #####Base Overridable Hooks:
@@ -199,7 +200,8 @@ class App.LineItem extends App.Base
 
 ####Class Functions
 
-`set_template()` On page load, use this function to set the template for the model. (i.e. `App.LineItem.set_template App.Template.template_info["line_item"]`)
+`set_template()` On page load, use this function to set the template for the model.
+(i.e. `App.LineItem.set_template App.Template.template_info["line_item"]`)
 
 `set_class_name()` Sets the class name for the model as well as dash_name and snake_name.
 
@@ -234,16 +236,16 @@ All jquery element not found errors are logged to `App.Logger`
 `App.Logger.errors` will return an array of errors with information including stack traces.
 
 ### Naming and Directory Structure
-Although this is really up to the individual developer, Kindred should really be set up with a similar naming and directory stucture as rails
+Although this is really up to the individual developer, Kindred should really be set up with a similar naming and directory stucture as rails.
 
 If you are adding code that is controller and action specific, then add a directory called controllers in your `app/assets/javascripts` directory.  If your controllers are namespaced then namespace them just like you do in your rails controllers.  Here is an example of a namespaced coffee class:
 
 ```coffeescript
 # app/assets/javascripts/controllers/admin/special/orders_controller.coffee
-this.Admin or= {};
-Admin.Special or= {};
+@Admin ||= {};
+@Admin.Special ||= {};
 
-class this.Admin.Special.OrdersController
+class @Admin.Special.OrdersController
 
   @index: (args) ->
     alert("Do some js stuff here...")
@@ -259,7 +261,7 @@ class App.SomeModel
   @set_class_name("SomeModel")
 ```
 
-Make note of the or=.  This is to make sure that you don't overwrite the js object if it already exists.
+Make note of the ||=.  This is to make sure that you don't overwrite the js object if it already exists.
 
 Use this same naming and directory structure for all your js.  If you are creating service objects then put them in `app/assets/javascripts/services`
 
