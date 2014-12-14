@@ -37,7 +37,7 @@ module TemplateHelper
 
   def k_check_box_tag(object_or_class_name, name, value=nil, checked = false, options = {})
     class_name = set_class_name(object_or_class_name)
-    check_box_tag name, value, checked, data: { attr: name, k_uuid: object_or_class_name.try(:uuid), val: "" }
+    check_box_tag name, value, checked, options.merge({data: { attr: name, k_uuid: object_or_class_name.try(:uuid), val: ""} })
   end
 
   def k_select_tag(object_or_class_name, name, option_tags = nil, options = {})
