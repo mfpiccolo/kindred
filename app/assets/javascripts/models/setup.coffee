@@ -10,8 +10,8 @@ class App.Setup
     @attributes = {}
     template = @opts.template || App[@constructor.name].template
 
-    if @opts.attrs?
-      $.each @opts.attrs, (key, val) =>
+    if @opts?
+      $.each @opts, (key, val) =>
         @set key, val
 
     @uuid = @opts.uuid || @attributes.uuid || App.UUID.generate()
