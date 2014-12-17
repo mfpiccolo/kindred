@@ -23,6 +23,7 @@ class App.Setup
       @template = template.replace(/\b(data-k-uuid)\.?[^\s|>]+/g, "data-k-uuid=" + @uuid)
       @template = @template.replace(/\b(data-id)\.?[^\s|>]+/g, "data-id=" + @id)
       @_build_attrs_template()
+      @_setup_interpolated_vars()
 
   @set_class_name: (class_name) ->
     @class_name = class_name
@@ -67,3 +68,16 @@ class App.Setup
         new_attr_string = replace_string.replace(/\b(data-val)\.?[^\s]+/g, "data-val='" + val + "'")
 
         @template = updated_template.replace(replace_regex, new_attr_string)
+
+  _setup_interpolated_vars: ->
+
+    template_match = new RegExp(/\$[^\"]*/g)
+
+    new_template = @template.replace(template_match, (match, p1) =>
+      class_name = match.split(".")[0].substr(1)
+      attribute = match.split(".")[0]
+      if class_name == @snake_name
+        @attributes[match.split(".")[1]]
+    )
+
+    @template = new_template
