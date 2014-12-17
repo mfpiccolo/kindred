@@ -8,27 +8,29 @@ class App.Listener
 
     # Define overriding method.
     jQuery.fn.on = ->
-      listener_function = arguments[2]
-      element = arguments[1]
-      listener_namespace = arguments[0].split(".")
-      event_trigger = listener_namespace[0]
-      listener_name = listener_namespace[listener_namespace.length - 1]
-      namespaces = listener_namespace.slice(1, -1)
+      if (jQuery.type( arguments[0] ) == "string")
+        listener_function = arguments[2]
+        element = arguments[1]
 
-      listener_info = {
-        trigger: event_trigger,
-        element: element,
-        name: listener_name,
-        funct: listener_function
-      }
+        listener_namespace = arguments[0].split(".")
+        event_trigger = listener_namespace[0]
+        listener_name = listener_namespace[listener_namespace.length - 1]
+        namespaces = listener_namespace.slice(1, -1)
 
-      App.Listener.createNestedObject(App, namespaces, listener_info)
+        listener_info = {
+          trigger: event_trigger,
+          element: element,
+          name: listener_name,
+          funct: listener_function
+        }
 
-      # Execute the original method.
-      originalOnMethod.apply this, arguments
-      return
+        App.Listener.createNestedObject(App, namespaces, listener_info)
 
-    return
+        # Execute the original method.
+        originalOnMethod.apply this, arguments
+
+      else
+        originalOnMethod.apply this, arguments
   )()
 
   @createNestedObject = (base, names, value) ->
