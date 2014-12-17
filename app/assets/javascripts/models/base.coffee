@@ -54,13 +54,13 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
       # This conditonal is for testing but there is no easy fix at the moment.
       # Put passes through data.  Patch dosn't.
       if (userAgent = window?.navigator?.userAgent).match /capybara-webkit/ || userAgent.match /PhantomJS/
-        url = @route + "/" + @id + ".json"
+        path = @route + "/" + @id + ".json"
         method = 'PUT'
       else
-        url = @route + "/" + @id + ".json"
+        path = @route + "/" + @id + ".json"
         method = 'PATCH'
     else
-      url = @route + ".json"
+      path = @route + ".json"
       method = "POST"
 
     params = {}
@@ -68,7 +68,7 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
     response = $.ajax
       type: method
-      url: url
+      url: App.BaseUrl + "/" + path
       dataType: "json"
       data: params
       global: false
