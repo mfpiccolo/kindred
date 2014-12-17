@@ -25,9 +25,13 @@ class App.ActivePage
       if select.length
         select.val(value)
 
+      span = $template.find("span[data-attr='" + key + "']")
+      if span.length
+        span.html(value)
+
     @_append_data_model_to_page()
 
-    $("[data-target='" + @dash_name + "']").append($template)
+    $("[data-target][data-target-uuid='" + @attributes["target_uuid"] + "']").append($template)
 
     error_tag = $("[data-error][data-k-uuid='" + @uuid + "']")
     error_tag.hide()
@@ -77,7 +81,7 @@ class App.ActivePage
       $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").data("val", val)
 
   _append_data_model_to_page: ->
-    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @snake_name + " data-parent-type=" + @parent + " data-parent-id=" + @parent_id + "></div>"
+    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @snake_name + "></div>"
     $("[data-kindred-model]").append(model_div)
 
   _input_dirty: (input) ->
