@@ -22,18 +22,6 @@ module TemplateHelper
     "data-target data-target-uuid=" + object.try(:uuid).to_s
   end
 
-  # def template(collection:, &block)
-  #   content_for :kindred_script do
-  #     js(
-  #       args: {
-  #         template: capture(&block),
-  #         collection: collection.to_json,
-  #       },
-  #       rendered: true
-  #     )
-  #   end
-  # end
-
   def k_content_tag(element, attribute = nil, object = nil, content_or_options_with_block = nil, options = {}, escape = true, &block)
     content_tag(element, nil, options.merge({data: { attr: attribute, k_uuid: object.try(:uuid), val: ""} }))
   end
@@ -42,7 +30,6 @@ module TemplateHelper
     hidden_field_tag name, value, options.merge({data: { attr: name, k_uuid: object.try(:uuid), val: value } })
   end
 
-  # TODO write five methods for each type of input
   def k_text_field_tag(object, attribute)
     text_field_tag attribute, nil, data: { attr: attribute, k_uuid: object.try(:uuid), val: "" }
   end
