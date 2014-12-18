@@ -8,8 +8,8 @@ class App.ActivePage
       uuids.push($(tag).data("k-uuid"))
 
     # map args for JS array seem to differ from jQuery array above
-    collection_attrs = uuids.map (uuid, i) ->
-      new App.LineItem({uuid: uuid}).assign_attributes_from_page().attributes
+    collection_attrs = uuids.map (uuid, i) =>
+      new @({uuid: uuid}).assign_attributes_from_page().attributes
 
   append_to_page: ->
     $template = $(@template)
