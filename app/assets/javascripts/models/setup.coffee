@@ -14,6 +14,7 @@ class App.Setup
 
     @uuid = @opts.uuid || @attributes.uuid || App.UUID.generate()
     @id = @opts.id || @attributes.id
+    @target_uuid = @opts.target_uuid || @attributes.target_uuid
 
     @attributes["uuid"] = @uuid
 
