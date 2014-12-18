@@ -8,14 +8,17 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
     # TODO fix the naive inflection
     collection = @collection_from_page(@snake_name)
     added_attrs = []
+
     $.each collection, (i, attrs) ->
-      added_attrs.push($.extend attrs, opts.add_data_to_each())
+      added_attrs.push($.extend attrs, opts.add_data_to_each)
 
     data[@snake_name + "s"] = added_attrs
 
+    path = @route + "/save_all.json"
+
     $.ajax
       type: "PATCH"
-      url: @route + "/save_all"
+      url: App.BaseUrl + "/" + path
       data: data
 
       success: (data, textStatus, xhr) =>
@@ -25,7 +28,8 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
           model.assign_attributes(attrs)
           model._clear_errors()
           model._update_data_vals_on_page()
-          model.mark_dirty_or_clean()
+          # TODO in demo app
+          # model.mark_dirty_or_clean()
       error: (xhr) =>
         data = JSON.parse(xhr.responseText)
         $(data).each (i, response_object) =>
