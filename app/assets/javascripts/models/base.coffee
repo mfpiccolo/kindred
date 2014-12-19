@@ -38,6 +38,9 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
   get: (attr_name) ->
     @attributes[attr_name]
 
+  remove: (attr_name) ->
+    delete @attributes[attr_name]
+
   save: ->
     if !isNaN(parseFloat(@id)) && isFinite(@id)
 
