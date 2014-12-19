@@ -118,7 +118,6 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
   #overridable hook
   @after_save_all: (data, textStatus, xhr) ->
-    # TODO create overridable hook
     $(data).each (i, response_object) =>
       attrs = response_object[@snake_name]
       model = new App[@class_name]({uuid: attrs["uuid"]})
@@ -130,7 +129,6 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
   #overridable hook
   @after_save_all_error: (xhr) ->
-    # TODO create overridable hook
     data = JSON.parse(xhr.responseText)
     $(data).each (i, response_object) =>
       unless $.isEmptyObject(response_object["errors"])
