@@ -55,4 +55,20 @@ class App.Listener
     # Return the last object in the hierarchy:
     base
 
+  @params: (obj) ->
+    # Stupid hack because jQuery converts data to camelCase
+    keys = Object.keys(obj)
+    n = keys.length
+    newobj = {}
+    while n--
+      key = keys[n]
 
+      if keys[n] == "kUuid"
+        snake_key = "uuid"
+      else
+        snake_key = key.replace(/([A-Z])/g, ($1) ->
+          "_" + $1.toLowerCase()
+          )
+      newobj[snake_key] = obj[key]
+
+    newobj
