@@ -30,8 +30,8 @@ module TemplateHelper
     hidden_field_tag name, value, options.merge({data: { attr: name, k_uuid: object.try(:uuid), val: value } })
   end
 
-  def k_text_field_tag(object, attribute)
-    text_field_tag attribute, nil, data: { attr: attribute, k_uuid: object.try(:uuid), val: "" }
+  def k_text_field_tag(object, attribute, options={})
+    text_field_tag attribute, nil, options.merge({data: { attr: attribute, k_uuid: object.try(:uuid), val: "" } })
   end
 
   def k_check_box_tag(object, name, value=nil, checked = false, options = {})
@@ -39,7 +39,7 @@ module TemplateHelper
   end
 
   def k_select_tag(object, name, option_tags = nil, options = {})
-    select_tag name, option_tags, data: { attr: name, k_uuid: object.try(:uuid), val: "" }
+    select_tag name, option_tags, options.merge(data: { attr: name, k_uuid: object.try(:uuid), val: "" })
   end
 
   def error_for(object, attribute)
