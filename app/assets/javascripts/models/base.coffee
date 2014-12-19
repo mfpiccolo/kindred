@@ -84,13 +84,13 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
   destroy: ->
     @route ||= @snake_name + "s"
-    url = @route + "/" + @id + ".json"
+    path = @route + "/" + @id + ".json"
     method = "DELETE"
 
     if !isNaN(parseFloat(@id)) && isFinite(@id)
       $.ajax
         type: method
-        url: url
+        url: App.BaseUrl + "/" + path
         dataType: "json"
         global: false
         async: false
