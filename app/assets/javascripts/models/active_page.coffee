@@ -36,6 +36,10 @@ class App.ActivePage
     error_tag = $("[data-error][data-k-uuid='" + @uuid + "']")
     error_tag.hide()
 
+  update_vals_on_page: ->
+    $.each @attributes, (attr, val) =>
+      $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").val(val)
+
   dirty_from_page: ->
     dirty = []
     $.each $("input[data-k-uuid='" + @uuid + "'], select[data-k-uuid='" + @uuid + "']"), (i, input) =>
