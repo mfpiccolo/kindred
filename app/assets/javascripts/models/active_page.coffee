@@ -31,7 +31,7 @@ class App.ActivePage
 
     @_append_data_model_to_page()
 
-    $("[data-target][data-target-uuid='" + @attributes["target_uuid"] + "']").append($template)
+    $("[data-target][data-target-uuid='" + @target_uuid + "']").append($template)
 
     error_tag = $("[data-error][data-k-uuid='" + @uuid + "']")
     error_tag.hide()
