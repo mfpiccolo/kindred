@@ -32,6 +32,12 @@ Or install it yourself as:
 
     $ gem install kindred
 
+## Getting Started with Rails
+
+Add `gem "kindred"` to gemfile
+
+Add `//= require kindred` to application.js manifest
+
 ## Demo
 
 If you would like to see kindred in action check out [kindred-demo](https://kindred-demo.herokuapp.com/dashboard).
