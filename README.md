@@ -40,7 +40,7 @@ Add `//= require kindred` to application.js manifest
 
 ## Demo
 
-If you would like to see kindred in action check out [kindred-demo](https://kindred-demo.herokuapp.com/dashboard).
+If you would like to see kindred in action check out [kindred-demo](https://kindred-demo.herokuapp.com/invoices/1/edit).
 
 ## Features
 ###Templates
