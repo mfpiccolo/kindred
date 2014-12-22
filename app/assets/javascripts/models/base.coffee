@@ -14,10 +14,18 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
     data[@snake_name + "s"] = added_attrs
 
-    path = @route + "/save_all.json"
+    # TODO REMOVE THIS AFTER WEBKIT BUG FIX. https://github.com/thoughtbot/capybara-webkit/issues/553
+    # This conditonal is for testing but there is no easy fix at the moment.
+    # Put passes through data.  Patch dosn't.
+    if (userAgent = window?.navigator?.userAgent).match /capybara-webkit/ || userAgent.match /PhantomJS/
+      path = @route + "/save_all.json"
+      method = 'PUT'
+    else
+      path = @route + "/save_all.json"
+      method = 'PATCH'
 
     $.ajax
-      type: "PATCH"
+      type: method
       url: App.BaseUrl + "/" + path
       data: data
 
@@ -124,8 +132,6 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
       model.assign_attributes(attrs)
       model._clear_errors()
       model._update_data_vals_on_page()
-      # TODO in demo app
-      # model.mark_dirty_or_clean()
 
   #overridable hook
   @after_save_all_error: (xhr) ->
