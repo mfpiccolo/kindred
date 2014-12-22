@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "kindred"
   spec.version       = Kindred::VERSION
   spec.authors       = ["Mike Piccolo"]
-  spec.email         = ["mpiccolo@newleaders.com"]
+  spec.email         = ["mfpiccolo@gmail.com"]
   spec.summary       = %q{}
   spec.description   = %q{}
   spec.homepage      = ""
