@@ -8,8 +8,8 @@ class App.ActivePage
       uuids.push($(tag).data("k-uuid"))
 
     # map args for JS array seem to differ from jQuery array above
-    collection_attrs = uuids.map (uuid, i) ->
-      new App.LineItem({uuid: uuid}).assign_attributes_from_page().attributes
+    collection_attrs = uuids.map (uuid, i) =>
+      new @({uuid: uuid}).assign_attributes_from_page().attributes
 
   append_to_page: ->
     $template = $(@template)
@@ -25,12 +25,20 @@ class App.ActivePage
       if select.length
         select.val(value)
 
+      span = $template.find("span[data-attr='" + key + "']")
+      if span.length
+        span.html(value)
+
     @_append_data_model_to_page()
 
-    $("[data-target='" + @dash_name + "']").append($template)
+    $("[data-target][data-target-uuid='" + @target_uuid + "']").append($template)
 
     error_tag = $("[data-error][data-k-uuid='" + @uuid + "']")
     error_tag.hide()
+
+  update_vals_on_page: ->
+    $.each @attributes, (attr, val) =>
+      $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").val(val)
 
   dirty_from_page: ->
     dirty = []
@@ -77,7 +85,7 @@ class App.ActivePage
       $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").data("val", val)
 
   _append_data_model_to_page: ->
-    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @snake_name + " data-parent-type=" + @parent + " data-parent-id=" + @parent_id + "></div>"
+    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @snake_name + "></div>"
     $("[data-kindred-model]").append(model_div)
 
   _input_dirty: (input) ->

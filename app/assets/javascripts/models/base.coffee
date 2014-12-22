@@ -8,32 +8,31 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
     # TODO fix the naive inflection
     collection = @collection_from_page(@snake_name)
     added_attrs = []
+
     $.each collection, (i, attrs) ->
-      added_attrs.push($.extend attrs, opts.add_data_to_each())
+      added_attrs.push($.extend attrs, opts.add_data_to_each)
 
     data[@snake_name + "s"] = added_attrs
 
+    # TODO REMOVE THIS AFTER WEBKIT BUG FIX. https://github.com/thoughtbot/capybara-webkit/issues/553
+    # This conditonal is for testing but there is no easy fix at the moment.
+    # Put passes through data.  Patch dosn't.
+    if (userAgent = window?.navigator?.userAgent).match /capybara-webkit/ || userAgent.match /PhantomJS/
+      path = @route + "/save_all.json"
+      method = 'PUT'
+    else
+      path = @route + "/save_all.json"
+      method = 'PATCH'
+
     $.ajax
-      type: "PATCH"
-      url: @route + "/save_all"
+      type: method
+      url: App.BaseUrl + "/" + path
       data: data
 
       success: (data, textStatus, xhr) =>
-        $(data).each (i, response_object) =>
-          attrs = response_object[@snake_name]
-          model = new App[@class_name]({uuid: attrs["uuid"]})
-          model.assign_attributes(attrs)
-          model._clear_errors()
-          model._update_data_vals_on_page()
-          model.mark_dirty_or_clean()
+        @after_save_all(data, textStatus, xhr)
       error: (xhr) =>
-        data = JSON.parse(xhr.responseText)
-        $(data).each (i, response_object) =>
-          unless $.isEmptyObject(response_object["errors"])
-            uuid = response_object[@snake_name].uuid
-            model = new App[@class_name](response_object[@snake_name])
-            model.assign_attributes_from_page()
-            model._handle_errors(response_object["errors"])
+        @after_save_all_error(xhr)
 
   # The attribute setter publish changes using the DataBinder PubSub
   set: (attr_name, val) ->
@@ -47,6 +46,9 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
   get: (attr_name) ->
     @attributes[attr_name]
 
+  remove: (attr_name) ->
+    delete @attributes[attr_name]
+
   save: ->
     if !isNaN(parseFloat(@id)) && isFinite(@id)
 
@@ -54,13 +56,13 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
       # This conditonal is for testing but there is no easy fix at the moment.
       # Put passes through data.  Patch dosn't.
       if (userAgent = window?.navigator?.userAgent).match /capybara-webkit/ || userAgent.match /PhantomJS/
-        url = @route + "/" + @id + ".json"
+        path = @route + "/" + @id + ".json"
         method = 'PUT'
       else
-        url = @route + "/" + @id + ".json"
+        path = @route + "/" + @id + ".json"
         method = 'PATCH'
     else
-      url = @route + ".json"
+      path = @route + ".json"
       method = "POST"
 
     params = {}
@@ -68,7 +70,7 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
     response = $.ajax
       type: method
-      url: url
+      url: App.BaseUrl + "/" + path
       dataType: "json"
       data: params
       global: false
@@ -80,13 +82,13 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
   destroy: ->
     @route ||= @snake_name + "s"
-    url = @route + "/" + @id + ".json"
+    path = @route + "/" + @id + ".json"
     method = "DELETE"
 
     if !isNaN(parseFloat(@id)) && isFinite(@id)
       $.ajax
         type: method
-        url: url
+        url: App.BaseUrl + "/" + path
         dataType: "json"
         global: false
         async: false
@@ -103,23 +105,43 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
         @id = val
       @set(attr, val)
 
-  #overwritable hook
+  #overridable hook
   after_save: (data, textStatus, xhr) ->
     @assign_attributes(data)
     @_clear_errors()
     @_update_data_vals_on_page()
+    @_setup_interpolated_vars()
 
-  #overwritable hook
+  #overridable hook
   after_save_error: (xhr) ->
     errors = JSON.parse(xhr.responseText)
     @_handle_errors(errors)
 
-  #overwritable hook
+  #overridable hook
   after_destroy: (data, textStatus, xhr) ->
     @remove_errors_from_page()
 
-  #overwritable hook
+  #overridable hook
   after_destroy_error: (xhr) ->
+
+  #overridable hook
+  @after_save_all: (data, textStatus, xhr) ->
+    $(data).each (i, response_object) =>
+      attrs = response_object[@snake_name]
+      model = new App[@class_name]({uuid: attrs["uuid"]})
+      model.assign_attributes(attrs)
+      model._clear_errors()
+      model._update_data_vals_on_page()
+
+  #overridable hook
+  @after_save_all_error: (xhr) ->
+    data = JSON.parse(xhr.responseText)
+    $(data).each (i, response_object) =>
+      unless $.isEmptyObject(response_object["errors"])
+        uuid = response_object[@snake_name].uuid
+        model = new App[@class_name](response_object[@snake_name])
+        model.assign_attributes_from_page()
+        model._handle_errors(response_object["errors"])
 
   _handle_errors: (errors_obj, uuid) ->
     hideable_error_inputs = $(Object.keys(@attributes)).not(Object.keys(errors_obj)).get()

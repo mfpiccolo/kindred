@@ -10,12 +10,11 @@ class App.Setup
     @attributes = {}
     template = @opts.template || App[@constructor.name].template
 
-    if @opts?
-      $.each @opts, (key, val) =>
-        @set key, val
+    @_set_opts_to_attributes()
 
     @uuid = @opts.uuid || @attributes.uuid || App.UUID.generate()
     @id = @opts.id || @attributes.id
+    @target_uuid = @opts.target_uuid || @attributes.target_uuid
 
     @attributes["uuid"] = @uuid
 
@@ -23,6 +22,7 @@ class App.Setup
       @template = template.replace(/\b(data-k-uuid)\.?[^\s|>]+/g, "data-k-uuid=" + @uuid)
       @template = @template.replace(/\b(data-id)\.?[^\s|>]+/g, "data-id=" + @id)
       @_build_attrs_template()
+      @_setup_interpolated_vars()
 
   @set_class_name: (class_name) ->
     @class_name = class_name
@@ -60,10 +60,29 @@ class App.Setup
       cloned_template = $(@template).clone()
       updated_template = $("<div />").append($(@template).clone()).html()
 
-
       if replace_string? && replace_string.length
         replace_regex = new RegExp(replace_string)
 
         new_attr_string = replace_string.replace(/\b(data-val)\.?[^\s]+/g, "data-val='" + val + "'")
 
         @template = updated_template.replace(replace_regex, new_attr_string)
+
+  _setup_interpolated_vars: =>
+    template_match = new RegExp(/{{([^{}]+)}}/g)
+
+    new_template = @template.replace(template_match, (match, p1) =>
+      class_name = match.split(".")[0].substr(2)
+      attribute = match.split(".")[1].slice(0, - 2)
+
+      if class_name == @snake_name && (typeof @get(attribute) != 'undefined')
+        @get(attribute)
+      else
+        match
+    )
+
+    @template = new_template
+
+  _set_opts_to_attributes: ->
+    if @opts?
+      $.each @opts, (key, val) =>
+        @set key, val
