@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'kindred/version'
+require 'kindred-rails/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "kindred-rails"
-  spec.version       = Kindred::VERSION
+  spec.version       = Kindred::Rails::VERSION
   spec.authors       = ["Mike Piccolo"]
   spec.email         = ["mpiccolo@newleaders.com"]
   spec.summary       = %q{}
