@@ -14,6 +14,12 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
     data[@snake_name + "s"] = added_attrs
 
+    url_match = new RegExp(/{{([^{}]+)}}/g)
+    @route = @route.replace(url_match, (match, p1) =>
+      attribute = match.slice(2, - 2)
+      opts.add_data_to_each[attribute]
+    )
+
     # TODO REMOVE THIS AFTER WEBKIT BUG FIX. https://github.com/thoughtbot/capybara-webkit/issues/553
     # This conditonal is for testing but there is no easy fix at the moment.
     # Put passes through data.  Patch dosn't.
