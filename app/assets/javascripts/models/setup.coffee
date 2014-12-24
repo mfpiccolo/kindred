@@ -2,8 +2,6 @@ class App.Setup
   constructor: (@opts) ->
     @_set_name_properties()
     @_set_self()
-    @route ||= App[@constructor.name].route
-    @route ||= "/" + @snake_name + "s"
 
     @opts ||= {}
 
@@ -11,6 +9,8 @@ class App.Setup
     template = @opts.template || App[@constructor.name].template
 
     @_set_opts_to_attributes()
+
+    @_setup_route()
 
     @uuid = @opts.uuid || @attributes.uuid || App.UUID.generate()
     @id = @opts.id || @attributes.id
@@ -86,3 +86,12 @@ class App.Setup
     if @opts?
       $.each @opts, (key, val) =>
         @set key, val
+
+  _setup_route: =>
+    url_match = new RegExp(/{{([^{}]+)}}/g)
+    @route ||= App[@constructor.name].route
+    @route ||= "/" + @snake_name + "s"
+    @route = @route.replace(url_match, (match, p1) =>
+      attribute = match.slice(2, - 2)
+      @get(attribute)
+    )
