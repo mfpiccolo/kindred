@@ -28,7 +28,7 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
       method = 'PUT'
     else
       path = @route + "/save_all.json"
-      method = 'PATCH'
+      method = 'PUT'
 
     $.ajax
       type: method
