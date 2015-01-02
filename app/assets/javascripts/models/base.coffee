@@ -20,15 +20,8 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
       opts.add_data_to_each[attribute]
     )
 
-    # TODO REMOVE THIS AFTER WEBKIT BUG FIX. https://github.com/thoughtbot/capybara-webkit/issues/553
-    # This conditonal is for testing but there is no easy fix at the moment.
-    # Put passes through data.  Patch dosn't.
-    if (userAgent = window?.navigator?.userAgent).match /capybara-webkit/ || userAgent.match /PhantomJS/
-      path = @route + "/save_all.json"
-      method = 'PUT'
-    else
-      path = @route + "/save_all.json"
-      method = 'PUT'
+    path = @route + "/save_all.json"
+    method = 'PUT'
 
     $.ajax
       type: method
@@ -57,16 +50,8 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
   save: ->
     if !isNaN(parseFloat(@id)) && isFinite(@id)
-
-      # TODO REMOVE THIS AFTER WEBKIT BUG FIX. https://github.com/thoughtbot/capybara-webkit/issues/553
-      # This conditonal is for testing but there is no easy fix at the moment.
-      # Put passes through data.  Patch dosn't.
-      if (userAgent = window?.navigator?.userAgent).match /capybara-webkit/ || userAgent.match /PhantomJS/
-        path = @route + "/" + @id + ".json"
-        method = 'PUT'
-      else
-        path = @route + "/" + @id + ".json"
-        method = 'PATCH'
+      path = @route + "/" + @id + ".json"
+      method = 'PUT'
     else
       path = @route + ".json"
       method = "POST"
