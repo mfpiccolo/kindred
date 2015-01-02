@@ -38,6 +38,12 @@ Add `gem "kindred"` to gemfile
 
 Add `//= require kindred` to application.js manifest
 
+Change your asset pipeline configuration to prevent uglifying of JS class names:
+
+```ruby
+Rails.application.config.assets.js_compressor = Uglifier.new(mangle: false)
+```
+
 ## Demo
 
 If you would like to see kindred in action check out [kindred-demo](https://kindred-demo.herokuapp.com/invoices/1/edit).
