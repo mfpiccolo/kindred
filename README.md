@@ -12,6 +12,7 @@ kindred
 | Homepage                |  [http://mfpiccolo.github.io/kindred][homepage] |
 | Documentation           |  [http://rdoc.info/github/mfpiccolo/kindred/frames][documentation] |
 | Issues                  |  [https://github.com/mfpiccolo/kindred/issues][issues] |
+| Conversation            |  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/mfpiccolo/kindred?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Description
 Kindred is an open source project that intends to optimize programmers happiness and productivity for client-heavy rails applications. Kindred aims to allow developers to create robust client side applications with minimal code while maintaining best practices and conventions.
