@@ -38,7 +38,7 @@ Add `gem "kindred"` to gemfile
 
 Add `//= require kindred` to application.js manifest
 
-Change your asset pipeline configuration to prevent uglifying of JS class names:
+If you are using uglifier you may need to add the following to assets.rb:
 
 ```ruby
 Rails.application.config.assets.js_compressor = Uglifier.new(mangle: false)
@@ -57,12 +57,12 @@ The `#template` method takes the following keyword arguments:
 
 `collection:` Collection of json serializable ruby objects
 
-`target:` String of the data-target attribute wrapper
+`target_uuid:` String of the uuid for the data-target-uuid attribute wrapper
 
 `&block` In the block pass html that will be used for that model
 
 ```HTML
-  <div data-target="line-item">
+  <div <%= target @invoice %>>
     <%= template(collection: @line_items, target: "line-item", model: "line_item") do %>
       <tr>
         <td><%= k_text_field_tag(:line_item, :description) %></td>
