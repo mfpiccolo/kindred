@@ -45,6 +45,39 @@ If you are using uglifier you may need to add the following to assets.rb:
 Rails.application.config.assets.js_compressor = Uglifier.new(mangle: false)
 ```
 
+The following config needs to be abstracted to the gem or refactored but for now:
+
+Add this configuration to application.html.erb:
+
+```
+<%= kindred_model_data %>
+<%= content_for :kindred_script %>
+<script type="text/javascript">
+  App.BaseUrl = '<%= "#{request.protocol}#{request.host_with_port}" %>';
+</script>
+```
+
+In the controller that you will be rendering kindred models you need to add:
+
+```
+...
+  after_action :setup_kindred
+
+  helper_method :js
+...
+```
+
+```
+  def setup_kindred
+    view_context.content_for :kindred_script do
+      js(js_class: "App.Template", function: "set_templates", args: @kindred_hash, rendered: true)
+    end
+  end
+```
+
+One again, much of this configuration will be removed in the future but is neccesary at the moment.
+
+
 ## Demo
 
 If you would like to see kindred in action check out [kindred-demo](https://kindred-demo.herokuapp.com/invoices/1/edit).
@@ -86,13 +119,31 @@ You could then get access to the collection or the template by using those prope
 
 `li_info.collection` would return the json collection
 
+###Interpolation
+Inside of templates, it is possible to interpolate dynamic data by using the {{}} syntax.
+
+For example, you could interpolate the id of the line item by doing the following
+```HTML
+  <div <%= target @invoice %>>
+    <%= template(collection: @line_items, target: "line-item", model: "line_item") do %>
+      <tr>
+        <td>{{line_item.id}}</td>
+        <td><%= k_text_field_tag(:line_item, :description) %></td>
+        <td><%= k_text_field_tag(:line_item, :qty) %></td>
+        <td><%= k_text_field_tag(:line_item, :price_cents) %></td>
+        <td><%= k_check_box_tag(:line_item, :complete) %></td>
+      </tr>
+    <% end %>
+  </div>
+ ```
+
 ###Controllers
 In kindred, javascript controllers are a client side augmentation of your ruby controllers.  They are just client side code that gets run on page load.
 
 ```coffeescript
-  class this.InvoicesController
-    @edit: ->
-       console.log "Run this on invoice edit view"
+class this.InvoicesController
+  @edit: ->
+     console.log "Run this on invoice edit view"
 ```
 
 To ensure that this code is run on the client side call the js method from your view or controller:
