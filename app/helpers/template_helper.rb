@@ -1,10 +1,6 @@
 module TemplateHelper
   def template(model: nil, collection: nil, target_uuid: nil, &block)
-    model_name = if collection.present?
-      ActiveModel::Naming.singular(collection.first)
-    else
-      model
-    end
+    model_name = model
 
     @kindred_hash ||= {}
     @kindred_hash.merge!({
