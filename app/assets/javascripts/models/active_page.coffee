@@ -44,7 +44,7 @@ class App.ActivePage
   update_displays_on_page: ->
     $.each @attributes, (attr, val) =>
       # TODO make this work with span and p
-      $("[data-k-uuid='" + @uuid + "']div[data-attr='" + attr + "']").html(val)
+      $("div[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "'], span[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "'], p[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").html(val)
 
   dirty_from_page: ->
     dirty = []
