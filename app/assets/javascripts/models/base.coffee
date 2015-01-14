@@ -101,7 +101,9 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
     @assign_attributes(data)
     @_clear_errors()
     @_update_data_vals_on_page()
+    @update_vals_on_page()
     @_setup_interpolated_vars()
+    @update_displays_on_page()
 
   #overridable hook
   after_save_error: (xhr) ->
