@@ -25,9 +25,10 @@ class App.ActivePage
       if select.length
         select.val(value)
 
-      span = $template.find("span[data-attr='" + key + "']")
-      if span.length
-        span.html(value)
+      display = $template.find("div[data-attr='" + key + "'], span[data-attr='" + key + "'], p[data-attr='" + key + "']")
+      if display.length
+        new_display = display.html(value)
+        display.replaceWith(new_display)
 
     @_append_data_model_to_page()
 
@@ -39,6 +40,11 @@ class App.ActivePage
   update_vals_on_page: ->
     $.each @attributes, (attr, val) =>
       $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").val(val)
+
+  update_displays_on_page: ->
+    $.each @attributes, (attr, val) =>
+      # TODO make this work with span and p
+      $("[data-k-uuid='" + @uuid + "']div[data-attr='" + attr + "']").html(val)
 
   dirty_from_page: ->
     dirty = []
@@ -65,9 +71,9 @@ class App.ActivePage
       else
         @set $input.data("attr"), $input.val()
 
-      model_data = $("[data-kindred-model]").find("[data-k-uuid='" + @uuid + "']")
-      if !isNaN(parseFloat(model_data.data("id"))) && isFinite(model_data.data("id"))
-        @id = model_data.data("id")
+    model_data = $("[data-kindred-model]").find("[data-k-uuid='" + @uuid + "']")
+    if !isNaN(parseFloat(model_data.data("id"))) && isFinite(model_data.data("id"))
+      @id = model_data.data("id")
 
     $("select[data-k-uuid='" + @uuid + "']").each (i, select) =>
       @set $(select).data("attr"), $(select).val()
