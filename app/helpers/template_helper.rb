@@ -19,7 +19,7 @@ module TemplateHelper
   end
 
   def k_content_tag(element, attribute = nil, object = nil, content_or_options_with_block = nil, options = {}, escape = true, &block)
-    content_tag(element, nil, options.merge({data: { attr: attribute, k_uuid: k_try(object, :uuid), val: ""} }))
+    content_tag(element, nil, options.merge({data: { attr: attribute, k_uuid: k_try(object, :uuid), val: object.try(attribute.to_sym)} }))
   end
 
   def k_hidden_field_tag(name, value=nil, object=nil, delegate_to=nil, options = {})
