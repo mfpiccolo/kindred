@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Kindred::VERSION
   spec.authors       = ["Mike Piccolo"]
   spec.email         = ["mpiccolo@newleaders.com"]
-  spec.summary       = %q{}
-  spec.description   = %q{}
+  spec.summary       = %q{Kindred is an open source project that intends to optimize programmers happiness and productivity for client-heavy rails applications. Kindred aims to allow developers to create robust client side applications with minimal code while maintaining best practices and conventions.}
+  spec.description   = %q{Javascript framework built for Rails}
   spec.homepage      = ""
   spec.license       = "MIT"
 
