@@ -48,6 +48,12 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
   remove: (attr_name) ->
     delete @attributes[attr_name]
 
+  set_meta: (attr_name, val) ->
+    @meta[attr_name] = val
+
+  remove_meta: (attr_name) ->
+    delete @meta[attr_name]
+
   save: ->
     if !isNaN(parseFloat(@id)) && isFinite(@id)
       path = @route + "/" + @id + ".json"
