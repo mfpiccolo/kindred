@@ -1,5 +1,5 @@
 module TemplateHelper
-  def template(model: nil, collection: nil, target_uuid: nil, &block)
+  def template(model: nil, collection: nil, target_uuid: nil, meta: nil, &block)
     model_name = model
 
     @kindred_hash ||= {}
@@ -8,6 +8,7 @@ module TemplateHelper
         template: capture(&block),
         collection: collection,
         target_uuid: target_uuid,
+        meta: meta
       }
     })
     self.controller.instance_variable_set(:@kindred_hash, @kindred_hash)
