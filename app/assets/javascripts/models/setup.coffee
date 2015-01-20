@@ -1,9 +1,12 @@
 class App.Setup
-  constructor: (@opts) ->
+  constructor: (@opts, meta_data) ->
     @_set_name_properties()
     @_set_self()
 
     @opts ||= {}
+
+    if meta_data?
+      @meta = meta_data["meta"]
 
     @attributes = {}
     template = @opts.template || App[@constructor.name].template
