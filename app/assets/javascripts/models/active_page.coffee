@@ -46,6 +46,9 @@ class App.ActivePage
       # TODO make this work with span and p
       $("div[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "'], span[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "'], p[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").html(val)
 
+  update_meta_on_page: ->
+    $("[data-kindred-model]").find("div[data-k-uuid='" + @uuid + "']").data("meta", @meta)
+
   dirty_from_page: ->
     dirty = []
     $.each $("input[data-k-uuid='" + @uuid + "'], select[data-k-uuid='" + @uuid + "']"), (i, input) =>
@@ -75,6 +78,8 @@ class App.ActivePage
     if !isNaN(parseFloat(model_data.data("id"))) && isFinite(model_data.data("id"))
       @id = model_data.data("id")
 
+    @meta = model_data.data("meta")
+
     $("select[data-k-uuid='" + @uuid + "']").each (i, select) =>
       @set $(select).data("attr"), $(select).val()
 
@@ -91,7 +96,7 @@ class App.ActivePage
       $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").data("val", val)
 
   _append_data_model_to_page: ->
-    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @snake_name + "></div>"
+    model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @snake_name + " data-meta=" + @_stringified_meta() + " ></div>"
     $("[data-kindred-model]").append(model_div)
 
   _input_dirty: (input) ->
@@ -101,3 +106,9 @@ class App.ActivePage
       !(input.data("val").toString() == input.prop("checked").toString())
     else
       !(input.data("val").toString() == input.val().toString())
+
+  _stringified_meta: ->
+    if @meta?
+      JSON.stringify(@meta)
+    else
+      ""
