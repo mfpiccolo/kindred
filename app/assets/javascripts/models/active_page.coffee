@@ -37,6 +37,10 @@ class App.ActivePage
     error_tag = $("[data-error][data-k-uuid='" + @uuid + "']")
     error_tag.hide()
 
+  remove_from_page: ->
+    $("[data-wrapper][data-k-uuid='" + @uuid + "']").remove()
+    $("[data-kindred-model]").find("div[data-k-uuid='" + @uuid + "']").remove()
+
   update_vals_on_page: ->
     $.each @attributes, (attr, val) =>
       $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").val(val)
