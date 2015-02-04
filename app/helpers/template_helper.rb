@@ -53,4 +53,15 @@ module TemplateHelper
     end
   end
 
+  def kindred_setup
+    setup = ""
+    setup << kindred_model_data
+    setup <<  <<-eos
+      <script type="text/javascript">
+        App.BaseUrl = "#{request.protocol}#{request.host_with_port}";
+      </script>
+    eos
+    setup.html_safe
+  end
+
 end

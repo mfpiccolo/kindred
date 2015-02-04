@@ -50,11 +50,7 @@ The following config needs to be abstracted to the gem or refactored but for now
 Add this configuration to application.html.erb:
 
 ```
-<%= kindred_model_data %>
-<%= content_for :kindred_script %>
-<script type="text/javascript">
-  App.BaseUrl = '<%= "#{request.protocol}#{request.host_with_port}" %>';
-</script>
+<%= kindred_setup %>
 ```
 
 In the controller that you will be rendering kindred models you need to add:
