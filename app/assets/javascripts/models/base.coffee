@@ -3,8 +3,13 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
   @set_template: (template) ->
     @template = template
 
+  # This method is a template of how a save all would work.   If your implementation
+  # is basic then this logic might pass but most apps will have complex batch
+  # persistence logic.  In that case you should overwrite this method in your model
+  # or create a javascript service that handles batch persistence
   @save_all: (opts) ->
     data = {}
+
     # TODO fix the naive inflection
     collection = @collection_from_page(@snake_name)
     added_attrs = []
@@ -33,27 +38,43 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
       error: (xhr) =>
         @after_save_all_error(xhr)
 
-  # The attribute setter publish changes using the DataBinder PubSub
+  # Example:
+  # li = new App.LineItem()
+  # li.set("foo", "bar")
+  # li.attributes # => {"foo": "bar"}
   set: (attr_name, val) ->
     @attributes[attr_name] = val
-    # @binder.trigger @id + ":change", [
-    #   attr_name
-    #   val
-    #   @
-    # ]
 
+  # Example:
+  # li = new App.LineItem({foo: "bar"})
+  # li.get("foo") # => "bar"
   get: (attr_name) ->
     @attributes[attr_name]
 
+  # Example:
+  # li = new App.LineItem({foo: "bar"})
+  # li.remove("foo")
+  # li.attributes # => {}
   remove: (attr_name) ->
     delete @attributes[attr_name]
 
+  # Example:
+  # li = new App.LineItem()
+  # li.set_meta("foo", "bar")
+  # li.meta # => {foo: "bar"}
   set_meta: (attr_name, val) ->
     @meta[attr_name] = val
 
+  # Example:
+  # li = new App.LineItem()
+  # li.set_meta("foo", "bar")
+  # li.remove_meta("foo")
+  # li.meta # => {}
   remove_meta: (attr_name) ->
     delete @meta[attr_name]
 
+  # POST or PUT will be used for the ajax request depending on the value of id.
+  # TODO: meta data is not submitted with this request
   save: ->
     if !isNaN(parseFloat(@id)) && isFinite(@id)
       path = @route + "/" + @id + ".json"
@@ -77,6 +98,8 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
       error: (xhr) =>
         @after_save_error(xhr)
 
+  # This method will send an ajax request if id is a number.  Other wise it will
+  # just call the after destroy callback.
   destroy: ->
     @route ||= @snake_name + "s"
     path = @route + "/" + @id + ".json"
@@ -96,6 +119,7 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
     else
       @after_destroy()
 
+  # accepts an object and assigns the key value pairs to the attributes hash
   assign_attributes: (attrs) ->
     $.each attrs, (attr, val) =>
       if attr == "id" && !isNaN(parseFloat(val)) && isFinite(val)
@@ -142,6 +166,10 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
         model.assign_attributes_from_page()
         model._handle_errors(response_object["errors"])
 
+  # Finds the attributes from a json response that do not have attached errors and
+  # will hide the errors that have been resolved.
+  # Then this method will iterate over the error responses and add the proper messaging
+  # and show the error tags
   _handle_errors: (errors_obj, uuid) ->
     hideable_error_inputs = $(Object.keys(@attributes)).not(Object.keys(errors_obj)).get()
     $.each hideable_error_inputs, (i, attr) =>
@@ -156,6 +184,7 @@ class App.Base extends App.VirtualClass App.ActivePage, App.Setup
 
       error_tag.show()
 
+  # hides all the errors
   _clear_errors: () ->
     $.each @attributes, (attr, val) =>
       $("[data-error][data-attr='" + attr + "'][data-k-uuid='" + @uuid + "']").hide()

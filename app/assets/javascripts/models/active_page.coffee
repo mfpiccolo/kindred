@@ -1,5 +1,8 @@
 class App.ActivePage
 
+  # This class method will with find all the models on the dom that are of a
+  # particular class.  Exapmle:
+  # `App.LineItem.collection_from_page() # => [LineItemObject, LineItemObject]
   @collection_from_page: ->
     indices = $("[data-kindred-model]").find("[data-k-uuid][data-class='#{@snake_name}']")
     uuids = []
@@ -11,6 +14,9 @@ class App.ActivePage
     collection_attrs = uuids.map (uuid, i) =>
       new @({uuid: uuid}).assign_attributes_from_page().attributes
 
+  # If a model has a target_uuid and there is a corresponding element on the dom
+  # with data-target and data-target-uuid="<specific-record-uuid>" this method
+  # will append that models template to the target element.
   append_to_page: ->
     $template = $(@template)
     $.each @attributes, (key, value) =>
@@ -37,22 +43,31 @@ class App.ActivePage
     error_tag = $("[data-error][data-k-uuid='" + @uuid + "']")
     error_tag.hide()
 
+  # Removes the wrapper element and the model from the data-kindred-model store.
   remove_from_page: ->
     $("[data-wrapper][data-k-uuid='" + @uuid + "']").remove()
     $("[data-kindred-model]").find("div[data-k-uuid='" + @uuid + "']").remove()
 
+  # Iterates through a modeals attributes and updates the values of the inputs or
+  # selects based on the models attributes
   update_vals_on_page: ->
     $.each @attributes, (attr, val) =>
       $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").val(val)
 
+  # A display attribute can be wrapped in a div, p, or span tag.  This method
+  # will replace the contents of these tags with the corrosponding attributes
+  # value
   update_displays_on_page: ->
     $.each @attributes, (attr, val) =>
-      # TODO make this work with span and p
       $("div[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "'], span[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "'], p[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").html(val)
 
+  # Updtaes the meta data on the dom
   update_meta_on_page: ->
     $("[data-kindred-model]").find("div[data-k-uuid='" + @uuid + "']").data("meta", @meta)
 
+  # Boolean method that will check if a page representation of a model is dirty
+  # by checking if any of the values of the inputs and selects differ from the ones
+  # originally added to the page
   dirty_from_page: ->
     dirty = []
     $.each $("input[data-k-uuid='" + @uuid + "'], select[data-k-uuid='" + @uuid + "']"), (i, input) =>
@@ -69,6 +84,14 @@ class App.ActivePage
     else
       false
 
+  # This method will pull all the inputs with the specific model uuid and assign
+  # the values to attributes.
+  # Example:
+  # html: <input data-attr="foo" data-k-uuid="long-uuid"> # user entered "bar"
+  # js: li = App.LineItem.new({uudi: "long-uuid"});
+  #     li.assign_attributes_from_page()
+  #     li.attributes # => {uuid: "long-uuid", foo: "bar"}
+  #     li.get("foo") # => "bar"
   assign_attributes_from_page: ->
     $("input[data-k-uuid='" + @uuid + "']").each (i, input) =>
       $input = $(input)
@@ -89,20 +112,26 @@ class App.ActivePage
 
     @
 
+  # Cleans up error elements.  This method is only useful if you are not using
+  # the wrapper element.
   remove_errors_from_page: ->
     $("[data-error][data-k-uuid='" + @uuid + "']").each (i, elem) =>
       $(elem).remove()
 
+  # Used to update the data-val values when returned from a server.
   _update_data_vals_on_page: ->
     model_data = $("[data-kindred-model]").find("[data-k-uuid='" + @uuid + "']")
     model_data.data("id", @id)
     $.each @attributes, (attr, val) =>
       $("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']").data("val", val)
 
+  # Adds a model to the data model on page store.  This should probably be converted
+  # over to using local storage or some other browser store.
   _append_data_model_to_page: ->
     model_div = "<div data-k-uuid=" + @uuid + " data-id=" + @id + " data-class=" + @snake_name + " data-meta=" + @_stringified_meta() + " ></div>"
     $("[data-kindred-model]").append(model_div)
 
+  # Checks if a particular jquery inputs data differes from the data-val
   _input_dirty: (input) ->
     if input.is("select") && input.data("val").length == 0
       false

@@ -9,6 +9,13 @@ class App.Setup
       @meta = meta_data["meta"]
 
     @attributes = {}
+
+    # Allows for templates to either be passed in through the constructor or
+    # to be set using the class level template
+    # Example:
+    # li = new App.LineItem({template: "<div>bunch of html></div>"})
+    # Or
+    # App.LineItem.template = "<div>bunch of html></div>"
     template = @opts.template || App[@constructor.name].template
 
     @_set_opts_to_attributes()
@@ -27,6 +34,10 @@ class App.Setup
       @_build_attrs_template()
       @_setup_interpolated_vars()
 
+  # Setus up the the different name strings
+  # ClassName
+  # class-name
+  # class_name
   @set_class_name: (class_name) ->
     @class_name = class_name
     @dash_name =  @_get_dash_name(class_name)
@@ -53,6 +64,7 @@ class App.Setup
     @dash_name =  App[@constructor.name]._get_dash_name(@class_name)
     @snake_name = App[@constructor.name].snake_name
 
+  # Sets up a template string with initial values
   _build_attrs_template: ->
     $.each @attributes, (attr, val) =>
       j_attr = $(@template).find("[data-k-uuid='" + @uuid + "'][data-attr='" + attr + "']")
@@ -70,6 +82,12 @@ class App.Setup
 
         @template = updated_template.replace(replace_regex, new_attr_string)
 
+  # Finds '{{}}' in the string template and replaces it with the attribute that
+  # is that is declared
+  # Example:
+  # template = "<div>{{line_item.foo}}</div>"
+  # li = new App.LineItem({foo: "bar"})
+  # li.template # => "<div>bar</div>"
   _setup_interpolated_vars: =>
     template_match = new RegExp(/{{([^{}]+)}}/g)
 
@@ -90,6 +108,11 @@ class App.Setup
       $.each @opts, (key, val) =>
         @set key, val
 
+  # Sets up the route with the ability to interpolate attributes into the route
+  # Example:
+  # class App.Box extends App.Base
+  #   @route = "invoices/{{invoice_id}}/line_items"
+  #   @set_class_name("LineItem")
   _setup_route: =>
     url_match = new RegExp(/{{([^{}]+)}}/g)
     @route ||= App[@constructor.name].route
